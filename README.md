@@ -1,57 +1,142 @@
 # diffusion-models
 
-Step 1: Create the Container Interactively
-bash# Set up directories first
-export HF_HOME="$HOME/hf_models"
-mkdir -p "$HF_HOME"
-mkdir -p ./wan_22_i2v_outputs
+A containerized implementation of state-of-the-art diffusion models for image-to-video generation, supporting multiple model architectures with AMD GPU acceleration.
 
-# Launch interactive container
-docker run -it \
-    --cap-add=SYS_PTRACE \
-    --security-opt seccomp=unconfined \
-    --user root \
-    --device=/dev/kfd \
-    --device=/dev/dri \
-    --ipc=host \
-    --network host \
-    --privileged \
-    --name wan22-benchmark \
-    --mount type=bind,source="$(pwd)/wan_22_i2v_outputs",target=/outputs \
-    --mount type=bind,source="$HF_HOME",target=/hf_home \
-    -e CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
-    -e OMP_NUM_THREADS=16 \
-    -e MIOPEN_FIND_MODE=3 \
-    -e MIOPEN_FIND_ENFORCE=3 \
-    -e MIOPEN_DEBUG_CONV_DIRECT=0 \
-    -e HF_HOME=/hf_home \
-    amdsiloai/pytorch-xdit:v25.11.2 \
-    bash
-Step 2: Inside the Container, Download Model
-bash# Install huggingface-hub if not present
-pip install huggingface-hub
+## 📋 Table of Contents
 
-# Download the model
-huggingface-cli download Wan-AI/Wan2.2-I2V-A14B-Diffusers
+- [Overview](#overview)
+- [Supported Models](#supported-models)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Repository Structure](#repository-structure)
+- [Documentation](#documentation)
+- [Hardware Requirements](#hardware-requirements)
+- [Contributing](#contributing)
+- [License](#license)
 
-# Verify download
-ls -lh /hf_home/
-Step 3: Run Inference Inside Container
-bash# Set your prompt
-export PROMPT="Summer beach vacation style, a white cat wearing sunglasses sits on a surfboard. The fluffy-furred feline gazes directly at the camera with a relaxed expression. Blurred beach scenery forms the background featuring crystal-clear waters, distant green hills, and a blue sky dotted with white clouds. The cat assumes a naturally relaxed posture, as if savoring the sea breeze and warm sunlight. A close-up shot highlights the feline's intricate details and the refreshing atmosphere of the seaside."
+## 🎯 Overview
 
-# Run inference
-torchrun --nproc_per_node=8 /app/external/xDiT/examples/wan_i2v_example.py \
-    --height 720 --width 1280 --num_frames 81 \
-    --model Wan-AI/Wan2.2-I2V-A14B-Diffusers \
-    --ulysses_degree 8 \
-    --prompt "${PROMPT}" \
-    --use_torch_compile \
-    --num_inference_steps 40 \
-    --img_file_path https://huggingface.co/datasets/YiYiXu/testing-images/resolve/main/wan_i2v_input.JPG
+This repository provides automated setup and execution scripts for running diffusion models in Docker containers with AMD ROCm support. Each model has its own directory with dedicated documentation and automation scripts.
 
-# Copy output
-cp ./i2v_output.mp4 /outputs/
+## 🤖 Supported Models
 
-# Exit container
-exit
+### ✅ Currently Available
+- **[Wan2.2 I2V](./wan_22/)** - Image-to-Video generation with 14B parameters
+  - Resolution: Up to 1280x720
+  - Frame generation: 81 frames
+  - Multi-GPU support via Ulysses parallelization
+
+### 🚧 Coming Soon
+- **Flux 2** - Advanced diffusion model for image generation
+
+## 🔧 Prerequisites
+
+### System Requirements
+- Linux-based operating system (Ubuntu 20.04+ recommended)
+- Docker installed and configured
+- AMD GPU with ROCm support
+- Minimum 8 AMD GPUs (or adjust configurations accordingly)
+
+### Software Dependencies
+```bash
+# Docker (version 20.10+)
+docker --version
+
+# Sufficient disk space
+# - Model weights: ~50GB per model
+# - Container images: ~20GB
+# - Output storage: Variable based on usage
+```
+
+### Account Setup
+- Hugging Face account with authentication token
+- Access permissions to model repositories
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/diffusion-models.git
+cd diffusion-models
+```
+
+### 2. Set Up Environment
+```bash
+# Export your Hugging Face token
+export HF_TOKEN="your_huggingface_token_here"
+
+# Choose a model directory
+cd wan_22
+```
+
+### 3. Run Automated Setup
+```bash
+# Make scripts executable
+chmod +x *.sh
+
+# Run the automated pipeline
+./run_wan22.sh
+```
+
+## 📁 Repository Structure
+
+```
+diffusion-models/
+├── README.md                 # This file
+├── wan_22/                   # Wan2.2 I2V model
+│   ├── README.md            # Wan2.2 specific documentation
+│   ├── run_wan22.sh         # Main automation script
+│   ├── setup_environment.sh # Environment setup
+│   └── outputs/             # Generated videos (auto-created)
+├── flux_2/                   # Flux 2 model (coming soon)
+    └── README.md            # Flux 2 documentation
+```
+
+## 📚 Documentation
+
+Each model has its own comprehensive README with:
+- Detailed setup instructions
+- Configuration options
+- Usage examples
+- Troubleshooting guides
+
+Navigate to the specific model directory for detailed documentation:
+- [Wan2.2 Documentation](./wan_22/README.md)
+- [Flux 2 Documentation](./flux_2/README.md) *(coming soon)*
+
+## 💻 Hardware Requirements
+
+### Minimum Configuration
+- **GPU**: 8x AMD MI250/MI300 series
+- **RAM**: 256GB system memory
+- **Storage**: 100GB free space (SSD recommended)
+- **Network**: High-speed internet for model downloads
+
+### Recommended Configuration
+- **GPU**: 8x AMD MI300X
+- **RAM**: 512GB system memory
+- **Storage**: 500GB NVMe SSD
+- **Network**: 1Gbps+ connection
+
+## 🛠️ Advanced Configuration
+
+### Environment Variables
+
+Global settings applicable to all models:
+
+```bash
+# Hugging Face configuration
+export HF_HOME="$HOME/hf_models"          # Model cache directory
+export HF_TOKEN="your_token"               # Authentication token
+
+# GPU configuration
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7  # GPU indices
+export OMP_NUM_THREADS=16                     # Thread count
+
+# ROCm/MIOpen settings
+export MIOPEN_FIND_MODE=3
+export MIOPEN_FIND_ENFORCE=3
+export MIOPEN_DEBUG_CONV_DIRECT=0
+```
+
+See individual model READMEs for detailed instructions.

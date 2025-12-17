@@ -1,0 +1,59 @@
+{
+  "test_cases": [
+    {
+      "name": "baseline_720p",
+      "height": 720,
+      "width": 1280,
+      "num_frames": 81,
+      "num_inference_steps": 40,
+      "ulysses_degree": 8
+    },
+    {
+      "name": "high_quality_720p",
+      "height": 720,
+      "width": 1280,
+      "num_frames": 81,
+      "num_inference_steps": 50,
+      "ulysses_degree": 8
+    },
+    {
+      "name": "fast_720p",
+      "height": 720,
+      "width": 1280,
+      "num_frames": 81,
+      "num_inference_steps": 25,
+      "ulysses_degree": 8
+    },
+    {
+      "name": "extended_frames",
+      "height": 720,
+      "width": 1280,
+      "num_frames": 121,
+      "num_inference_steps": 40,
+      "ulysses_degree": 8
+    },
+    {
+      "name": "4gpu_baseline",
+      "height": 720,
+      "width": 1280,
+      "num_frames": 81,
+      "num_inference_steps": 40,
+      "ulysses_degree": 4
+    },
+    {
+      "name": "1080p_baseline",
+      "height": 1080,
+      "width": 1920,
+      "num_frames": 81,
+      "num_inference_steps": 40,
+      "ulysses_degree": 8
+    }
+  ],
+  "prompts": [
+    "Summer beach vacation style, a white cat wearing sunglasses sits on a surfboard.",
+    "A majestic lion walking through the African savanna at sunset.",
+    "A futuristic city with flying cars and neon lights at night.",
+    "An astronaut floating in space with Earth in the background.",
+    "A serene mountain landscape with a crystal clear lake."
+  ]
+}

@@ -6,7 +6,6 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 SUITE_DIR="${BENCHMARK_DIR}/suite_${TIMESTAMP}"
 
 mkdir -p "$SUITE_DIR"
-cd "$SUITE_DIR"
 
 echo "╔════════════════════════════════════════════════════════════════╗"
 echo "║     WAN 2.2 I2V COMPREHENSIVE BENCHMARK SUITE                 ║"

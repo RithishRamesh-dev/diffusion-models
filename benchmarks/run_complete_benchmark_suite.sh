@@ -14,10 +14,10 @@ echo "║     Started: $(date)                            ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 
 # Copy config files
-cp /benchmarks/benchmark_configs.json .
-cp /benchmarks/run_benchmarks.py .
-cp /benchmarks/benchmark_scalability.sh .
-cp /benchmarks/benchmark_quality_speed.sh .
+cp ./benchmarks/benchmark_configs.json .
+cp ./benchmarks/run_benchmarks.py .
+cp ./benchmarks/benchmark_scalability.sh .
+cp ./benchmarks/benchmark_quality_speed.sh .
 
 # Start GPU monitoring
 echo "Starting GPU monitoring..."

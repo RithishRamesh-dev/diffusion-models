@@ -48,27 +48,7 @@
       "num_inference_steps": 40,
       "ulysses_degree": 4,
       "use_torch_compile": true,
-      "description": "4-GPU configuration for smaller systems"
-    },
-    {
-      "name": "1080p_baseline",
-      "height": 1080,
-      "width": 1920,
-      "num_frames": 81,
-      "num_inference_steps": 40,
-      "ulysses_degree": 8,
-      "use_torch_compile": true,
-      "description": "Full HD 1080p resolution"
-    },
-    {
-      "name": "1080p_high_quality",
-      "height": 1080,
-      "width": 1920,
-      "num_frames": 81,
-      "num_inference_steps": 50,
-      "ulysses_degree": 8,
-      "use_torch_compile": true,
-      "description": "1080p with higher quality"
+      "description": "4-GPU configuration"
     },
     {
       "name": "short_video_720p",
@@ -79,38 +59,36 @@
       "ulysses_degree": 8,
       "use_torch_compile": true,
       "description": "Shorter video for quick testing"
-    },
-    {
-      "name": "extreme_frames",
-      "height": 720,
-      "width": 1280,
-      "num_frames": 161,
-      "num_inference_steps": 40,
-      "ulysses_degree": 8,
-      "use_torch_compile": true,
-      "description": "Very long video generation"
-    },
-    {
-      "name": "2gpu_baseline",
-      "height": 720,
-      "width": 1280,
-      "num_frames": 81,
-      "num_inference_steps": 40,
-      "ulysses_degree": 2,
-      "use_torch_compile": true,
-      "description": "2-GPU configuration for limited hardware"
     }
   ],
   "prompts": [
     "Summer beach vacation style, a white cat wearing sunglasses sits on a surfboard. The fluffy-furred feline gazes directly at the camera with a relaxed expression. Blurred beach scenery forms the background featuring crystal-clear waters, distant green hills, and a blue sky dotted with white clouds. The cat assumes a naturally relaxed posture, as if savoring the sea breeze and warm sunlight. A close-up shot highlights the feline's intricate details and the refreshing atmosphere of the seaside."
   ],
-  "precision_modes": [
-    "bf16",
-    "fp8"
-  ],
-  "notes": {
-    "bf16": "Brain Float 16 - Default precision, good balance of performance and quality",
-    "fp8": "Float Point 8 - Faster inference with lower precision, may affect quality",
-    "fp16": "Float Point 16 - Alternative precision mode (uncomment to test)"
+  "precision_modes_info": {
+    "default": {
+      "description": "Standard BF16 precision (no additional flags)",
+      "flags": "none",
+      "use_case": "Baseline for comparison"
+    },
+    "bf16_te": {
+      "description": "BF16 with BF16 timestep embeddings",
+      "flags": "--use_bf16_te_gemms",
+      "use_case": "Improved numerical stability for timestep embeddings"
+    },
+    "fp8": {
+      "description": "FP8 quantized linear layers",
+      "flags": "--use_fp8_gemms",
+      "use_case": "Faster inference, lower memory, may slightly reduce quality"
+    },
+    "fp8_bf16_te": {
+      "description": "FP8 quantized linear layers with BF16 timestep embeddings",
+      "flags": "--use_fp8_gemms --use_bf16_te_gemms",
+      "use_case": "Best speed with some quality preservation"
+    }
+  },
+  "usage_examples": {
+    "test_all_precisions": "python3 benchmark_script.py --config benchmark_config.json --precision default bf16_te fp8 fp8_bf16_te",
+    "test_default_and_fp8": "python3 benchmark_script.py --config benchmark_config.json --precision default fp8",
+    "test_fp8_only": "python3 benchmark_script.py --config benchmark_config.json --precision fp8"
   }
 }

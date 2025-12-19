@@ -22,17 +22,17 @@ echo "Monitor PID: $MONITOR_PID"
 # Run main benchmark suite
 echo ""
 echo "=== Phase 1: Main Benchmark Suite ==="
-python3 run_benchmarks.py 2>&1 | tee main_benchmark.log
+nohup python3 run_benchmarks.py > main_benchmark.log  2>&1 &
 
 # Run scalability tests
 echo ""
 echo "=== Phase 2: Scalability Testing ==="
-./benchmark_scalability.sh 2>&1 | tee scalability.log
+nohup ./benchmark_scalability.sh > scalability.log  2>&1 & 
 
 # Run quality/speed trade-off tests
 echo ""
 echo "=== Phase 3: Quality vs Speed Trade-off ==="
-./benchmark_quality_speed.sh 2>&1 | tee quality_speed.log
+nohup ./benchmark_quality_speed.sh > quality_speed.log  2>&1 &
 
 # Stop monitoring
 echo ""
